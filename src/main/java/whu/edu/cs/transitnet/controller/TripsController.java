@@ -17,6 +17,12 @@ public class TripsController {
     @Resource
     TripsService tripsService;
 
+    /**
+     * Get trips by routeId
+     * @param routeId
+     * @return List<TripsEntity>
+     * @throws Exception
+     */
     @CrossOrigin
     @GetMapping("/api/trips")
     @ResponseBody
@@ -24,6 +30,14 @@ public class TripsController {
         return tripsService.getTripsByRouteId(routeId);
     }
 
+    /**
+     * Get trips by routeId and timespan
+     * @param routeId
+     * @param startDate
+     * @param endDate
+     * @return List<TripsEntity>
+     * @throws Exception
+     */
     @CrossOrigin
     @GetMapping("/api/trips/timespan")
     @ResponseBody

@@ -17,20 +17,25 @@ public class RoutesController {
     @Resource
     RoutesService routesService;
 
+    /**
+     * Get all routes
+     * @return List<RoutesEntity>
+     * @throws Exception
+     */
     @CrossOrigin
     @GetMapping("/api/routes")
     @ResponseBody
     public List<RoutesEntity> listRoutes() throws Exception{
         return routesService.getAllRoute();
     }
-//
-//    @CrossOrigin
-//    @GetMapping("/api/routes")
-//    @ResponseBody
-//    public List<RoutesEntity> listRoutes() throws Exception{
-//        return routesService.getByRoutesId("S46");
-//    }
 
+    /**
+     * Get routes by timespan
+     * @param startDate
+     * @param endDate
+     * @return List<RoutesEntity>
+     * @throws Exception
+     */
     @CrossOrigin
     @GetMapping("/api/routes/timespan")
     @ResponseBody

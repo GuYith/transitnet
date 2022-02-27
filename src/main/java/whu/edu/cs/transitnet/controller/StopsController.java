@@ -16,6 +16,11 @@ public class StopsController {
     @Resource
     StopsService stopsService;
 
+    /**
+     * Get stops by tripId
+     * @param tripId
+     * @return List<StopsVo>
+     */
     @CrossOrigin
     @GetMapping("/api/stops")
     @ResponseBody

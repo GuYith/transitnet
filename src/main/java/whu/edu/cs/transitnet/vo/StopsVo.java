@@ -1,10 +1,10 @@
 package whu.edu.cs.transitnet.vo;
 
 import whu.edu.cs.transitnet.Torch.base.model.TrajEntry;
-import whu.edu.cs.transitnet.Torch.queryEngine.visualization.TrajJsonModel;
+import whu.edu.cs.transitnet.Torch.base.visualization.PointJsonModel;
 
-import java.util.Date;
 import java.sql.Time;
+import java.util.Date;
 
 public class StopsVo implements TrajEntry {
     private String stopId;
@@ -15,20 +15,7 @@ public class StopsVo implements TrajEntry {
     private int stopSequence;
     private Double stopLat;
     private Double stopLon;
-    private TrajJsonModel trajJsonModel;
-
-    //TODO delete TraJsonModel
-    public StopsVo(String stopId, String tripId, String stopName, Time arrivalTime, Time departureTime, int stopSequence, Double stopLat, Double stopLon) {
-        this.stopId = stopId;
-        this.tripId = tripId;
-        this.stopName = stopName;
-        this.arrivalTime = arrivalTime;
-        this.departureTime = departureTime;
-        this.stopSequence = stopSequence;
-        this.stopLat = stopLat;
-        this.stopLon = stopLon;
-        this.trajJsonModel = null;
-    }
+    private PointJsonModel pointJsonModel;
 
     public StopsVo(String stopId, String tripId, String stopName, Date arrivalTime, Date departureTime, int stopSequence, Double stopLat, Double stopLon) {
         this.stopId = stopId;
@@ -39,10 +26,20 @@ public class StopsVo implements TrajEntry {
         this.stopSequence = stopSequence;
         this.stopLat = stopLat;
         this.stopLon = stopLon;
-        this.trajJsonModel = null;
+        this.pointJsonModel = new PointJsonModel(stopLon, stopLat);
     }
 
-
+    public StopsVo(String stopId, String tripId, String stopName, Time arrivalTime, Time departureTime, int stopSequence, Double stopLat, Double stopLon, PointJsonModel pointJsonModel) {
+        this.stopId = stopId;
+        this.tripId = tripId;
+        this.stopName = stopName;
+        this.arrivalTime = arrivalTime;
+        this.departureTime = departureTime;
+        this.stopSequence = stopSequence;
+        this.stopLat = stopLat;
+        this.stopLon = stopLon;
+        this.pointJsonModel = pointJsonModel;
+    }
     @Override
     public int getId() {
         return 0;
@@ -122,11 +119,11 @@ public class StopsVo implements TrajEntry {
         this.stopLon = stopLon;
     }
 
-    public TrajJsonModel getTrajJsonModel() {
-        return trajJsonModel;
+    public PointJsonModel getPointJsonModel() {
+        return pointJsonModel;
     }
 
-    public void setTrajJsonModel(TrajJsonModel trajJsonModel) {
-        this.trajJsonModel = trajJsonModel;
+    public void setPointJsonModel(PointJsonModel pointJsonModel) {
+        this.pointJsonModel = pointJsonModel;
     }
 }

@@ -2,7 +2,7 @@ package whu.edu.cs.transitnet.Torch.base.model;
 
 /**
  * Classes implemented TrajEntry could be added to Trajectory
- * @see Trajectory
+ * @see
  */
 public interface TrajEntry{
     /**

@@ -1,6 +1,6 @@
 package whu.edu.cs.transitnet.vo;
 
-import whu.edu.cs.transitnet.Torch.queryEngine.visualization.TrajJsonModel;
+import whu.edu.cs.transitnet.Torch.base.visualization.TrajJsonModel;
 
 public class RoutesVo {
     private String routeId;

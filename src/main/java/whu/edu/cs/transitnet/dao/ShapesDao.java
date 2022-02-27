@@ -10,9 +10,8 @@ import java.util.List;
 
 public interface ShapesDao extends JpaRepository<ShapesEntity, ShapesEntityPK> {
 
-    @Query(value = "SELECT new whu.edu.cs.transitnet.vo.ShapesVo(se.shapeId, "
-            + "se.shapePtLat, se.shapePtLon, "
-            + "se.shapePtSequence, te.routeId)"
+    @Query(value = "SELECT new whu.edu.cs.transitnet.vo.ShapesVo("
+            + "se.shapePtLat, se.shapePtLon)"
             + "FROM ShapesEntity se left join TripsEntity te on se.shapeId = te.shapeId "
             + "WHERE te.routeId = ?1 AND te.tripId = ?2 "
             + "ORDER BY se.shapePtSequence")

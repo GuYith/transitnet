@@ -1,4 +1,4 @@
-package whu.edu.cs.transitnet;
+package whu.edu.cs.transitnet.utils;
 
 import org.springframework.stereotype.Component;
 import whu.edu.cs.transitnet.vo.ShapesVo;
@@ -13,13 +13,14 @@ public class TimeUtil {
     private static double EARTH_RADIUS = 6378.137;
     public static TimeUtil timeUtil;
 
-    public List<Double> findNearestPoint(List<StopsVo> stopsVos, List<ShapesVo> shapesVos) {
+    public List<Double> CalculateVehicleStopArriveTimes(List<StopsVo> stopsVos, List<ShapesVo> shapesVos) {
         System.out.println("Calculating Route Time...");
-        List<Integer> nearestIdxs = new ArrayList<Integer>();
+        List<Integer> nearestIdxs = new ArrayList<Integer>(); //closest List of shape points index for every stop
         StopsVo lastStop = null;
         Integer cnt = 0;
         Double speed = 0.0;
-        List<Double> speeds = new ArrayList<Double>();
+        List<Double> speeds = new ArrayList<Double>(); //List for the speed of the bus between each stop
+        //Find the shape point closest to stop
         for (StopsVo stop: stopsVos) {
             double minDistance = Double.MAX_VALUE;
             Integer idx = 0;
@@ -44,6 +45,7 @@ public class TimeUtil {
         ShapesVo stopNearest = shapesVos.get(nearestIdxs.get(stopIdx));
         ShapesVo lastShape = null;
         List<Double> times = new ArrayList<Double>();
+        //calculate the time span between stops by distance and speedList
         for(Integer i = 0; i < shapesVos.size(); i ++) {
             ShapesVo shapesVo = shapesVos.get(i);
             if(i > 0) {
@@ -62,9 +64,6 @@ public class TimeUtil {
         return times;
     }
 
-//    public static void main(String[] args) {
-//        timeUtil.findNearestPoint("S46", "CA_D1-Saturday-000000_S4696_40");
-//    }
     public double getDistance(double lng1, double lat1, double lng2, double lat2) {
         double lng_1 = Math.toRadians(lng1);
         double lat_1 = Math.toRadians(lat1);

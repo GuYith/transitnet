@@ -1,19 +1,17 @@
-package whu.edu.cs.transitnet.Torch.queryEngine.visualization;
+package whu.edu.cs.transitnet.Torch.base.visualization.trajectory;
 
 import whu.edu.cs.transitnet.Torch.base.model.TrajEntry;
 
 import java.util.List;
-//TODO Gemetry Modified
 public class Geometry {
 
-    String type;
+    String type = "LineString";
 
     //lng, lat
     //order is vital
     double[][] coordinates;
 
-    public Geometry(String type, List<TrajEntry> path){
-        this.type = type;
+    public Geometry(List<TrajEntry> path){
         int pathLen = path == null ? 0 : path.size();
         coordinates = new double[pathLen][2];
         for (int i = 0; i < pathLen; i++){
@@ -22,20 +20,6 @@ public class Geometry {
         }
     }
 
-    public Geometry(String type, TrajEntry point) {
-        this.type = type;
-        coordinates = new double[1][2];
-        coordinates[0][0] = point.getLng();
-        coordinates[0][1] = point.getLat();
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
 
     public double[][] getCoordinates() {
         return coordinates;

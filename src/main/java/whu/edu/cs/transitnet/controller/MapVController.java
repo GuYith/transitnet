@@ -18,6 +18,12 @@ public class MapVController {
     @Resource
     MapVService mapVService;
 
+    /**
+     * Get the trajectory of route By routeId and tripId
+     * @param routeId
+     * @param tripId
+     * @return routesVo
+     */
     @CrossOrigin
     @GetMapping("/api/mapv")
     @ResponseBody
@@ -25,6 +31,11 @@ public class MapVController {
         return mapVService.getRouteVoByRouteIdAndTripId(routeId, tripId);
     }
 
+    /**
+     * Get trajectories of all routes, just the first in DataBase
+     * for visualization test
+     * @return List<RoutesVo>
+     */
     @CrossOrigin
     @GetMapping("/api/mapv/origin")
     @ResponseBody
@@ -32,6 +43,13 @@ public class MapVController {
         return mapVService.getRoutesVoOriginList();
     }
 
+    /**
+     * Get trajectories by timespan
+     * Accurate to the day
+     * @param startDate
+     * @param endDate
+     * @return List<RoutesVo>
+     */
     @CrossOrigin
     @GetMapping("/api/mapv/timespan")
     @ResponseBody
@@ -41,6 +59,12 @@ public class MapVController {
         return mapVService.getRoutesVoByTimeSpan(sD, eD);
     }
 
+    /**
+     * Get time list for one trip of route
+     * @param routeId
+     * @param tripId
+     * @return
+     */
     @CrossOrigin
     @GetMapping("/api/mapv/timeList")
     @ResponseBody

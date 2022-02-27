@@ -1,6 +1,7 @@
-package whu.edu.cs.transitnet.Torch.queryEngine.visualization;
+package whu.edu.cs.transitnet.Torch.base.visualization;
 
 import whu.edu.cs.transitnet.Torch.base.model.TrajEntry;
+import whu.edu.cs.transitnet.Torch.base.visualization.trajectory.Geometry;
 
 import java.util.List;
 
@@ -10,12 +11,9 @@ public class TrajJsonModel {
 
     Double size;
     public TrajJsonModel(List<TrajEntry> path){
-        geometry = new Geometry("LineString", path);
+        geometry = new Geometry(path);
     }
-
-    public TrajJsonModel(TrajEntry point, Double size) {
-        geometry = new Geometry("Point", point);
-        this.size = size;
+    public TrajJsonModel(){
     }
     public Geometry getGeometry() {
         return geometry;

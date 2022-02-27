@@ -9,7 +9,6 @@ import java.util.List;
 
 public interface TripsDao extends JpaRepository<TripsEntity, String> {
     List<TripsEntity> findAll();
-    //TODO unify queries
     List<TripsEntity> findAllByRouteId(String routeId);
 
     @Query(value = "SELECT * FROM trips GROUP BY route_id", nativeQuery = true)

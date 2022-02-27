@@ -16,6 +16,12 @@ public class RealTimeDataController {
     @Resource
     RealTimeDataService realTimeDataService;
 
+    /**
+     * Get real time data by vehicleId and recordedTime
+     * @param vehicleId
+     * @param recordedTime
+     * @return RealTimeDataEntity
+     */
     @CrossOrigin
     @GetMapping("/api/realTime")
     @ResponseBody
@@ -23,6 +29,11 @@ public class RealTimeDataController {
         return realTimeDataService.getRealTimeDataEntityByVehicleIdAndRecordedTime(vehicleId, recordedTime);
     }
 
+    /**
+     * Get vehicle list by recordedTime
+     * @param recordedTime
+     * @return List<String>
+     */
     @CrossOrigin
     @GetMapping("/api/realTime/vehicle")
     @ResponseBody
