@@ -22,6 +22,8 @@ public class RealTimeDataService {
     long TIMESTEP = 1000*60*15;
     long TIMEDATE = 1000*60*60*24;
     long LASTTIMESPAN = 1000*60*5;
+    Integer firstIndex = 0;
+    Integer tempIndex = 0;
     public RealTimeDataEntity getRealTimeDataEntityByVehicleIdAndRecordedTime(String vehicleId, String recordedTime) {
         return realTimeDataDao.findAllByVehicleIdAndRecordedTime(vehicleId, recordedTime);
     }
@@ -31,83 +33,86 @@ public class RealTimeDataService {
         Timestamp start = new Timestamp(curTime.getTime() - LASTTIMESPAN);
         String startTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(start);
         String endTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(end);
+        System.out.println(startTime);
+        System.out.println(endTime);
         List<RealTimeDataEntity> realTimeDataEntities = realTimeDataDao.findAllLastByRecordedTimeSpan(startTime, endTime);
+
+        for (RealTimeDataEntity re: realTimeDataEntities) {
+            System.out.println(re.getVehicleId());
+        }
         return realTimeDataEntities;
     }
     public List<String> getVehicleIdList(String recordedTime) {
         return realTimeDataDao.findAllVehicleIdByRecordedTime(recordedTime);
     }
 
-    public List<SpeedDateData> getSpeedDateListByVehicleIdLastSevenDate(String vehicleId, String curTime) {
+    public List<SpeedDateData> getSpeedDateListByVehicleIdLastSevenDate(String vehicleId, String curTimeStr) {
         List<SpeedDateData> speedDateDatas = new ArrayList<>();
-        Timestamp lastTime = Timestamp.valueOf(curTime);
-        String lastDateStr = curTime.substring(0,10);
-        Date lastDate = Date.valueOf(lastDateStr);
-        Timestamp startTime = new Timestamp(lastDate.getTime());
-        Timestamp endTime = lastTime;
+        Timestamp curTime = Timestamp.valueOf(curTimeStr);
+        String curTimeDate = curTimeStr.substring(0,10);
+        Date lastDate = Date.valueOf(curTimeDate);
+        Timestamp startTime = new Timestamp(lastDate.getTime() - 6*TIMEDATE);
+        Timestamp endTime = curTime;
         System.out.println("startTime: " + startTime);
         System.out.println("endTime: " + endTime);
-        speedDateDatas.add(getSpeedDateListByVehicleIdAndDate(vehicleId, startTime, lastTime));
-        for(Integer i = 0; i < 7; i ++) {
-            endTime = startTime;
-            startTime = new Timestamp(endTime.getTime() - TIMEDATE);
-            System.out.println("startTime: " + startTime);
-            System.out.println("endTime: " + endTime);
-            SpeedDateData curSpeedData = getSpeedDateListByVehicleIdAndDate(vehicleId, startTime, endTime);
-            speedDateDatas.add(curSpeedData);
+        String timeStr1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(startTime);
+        String timeStr2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(endTime);
+        List<RealTimeDataVo> vehiclePoints =  realTimeDataDao.findAllByVehicleIdByTimeSpan(vehicleId, timeStr1, timeStr2);
+        Timestamp loopEndTime = new Timestamp(lastDate.getTime() + TIMEDATE);
+
+        Integer allPointsCount = vehiclePoints.size();
+        firstIndex = 0;
+        tempIndex = 0;
+        while (!startTime.equals(loopEndTime)) {
+            Timestamp dateStart = startTime;
+            Timestamp dateEnd = new Timestamp(dateStart.getTime() + TIMEDATE);
+            System.out.println("firstIdx: " + firstIndex);
+            System.out.println("tempIdx: " + tempIndex);
+            SpeedDateData speedDateData = getSpeedDateListByVehicleIdAndDate(dateStart, dateEnd,
+                                                            vehiclePoints);
+            speedDateDatas.add(speedDateData);
+            startTime = dateEnd;
         }
         return speedDateDatas;
     }
 
-    public SpeedDateData getSpeedDateListByVehicleIdAndDate(String vehicleId, Timestamp start, Timestamp end) {
+    public SpeedDateData getSpeedDateListByVehicleIdAndDate(Timestamp dateStart, Timestamp dateEnd,
+                                                            List<RealTimeDataVo> vehiclePoints) {
+        Timestamp lastTime = dateStart;
         List<Double> speedList = new ArrayList<>();
-        Timestamp lastTime = start;
-        Timestamp loopEndTime = new Timestamp(start.getTime() + TIMEDATE);
-        String timeStr1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(start);
-        String timeStr2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(end);
-//        one date
-        List<RealTimeDataVo> vehiclePoints =  realTimeDataDao.findAllByVehicleIdByTimeSpan(vehicleId, timeStr1, timeStr2);
-        Integer firstIndex = 0;
-        Integer tempIdx = 0;
-//        while(!lastTime.equals(loopEndTime)) {
-//            Timestamp tempTime = new Timestamp(lastTime.getTime() + TIMESTEP);
-//            String timeStr1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(lastTime);
-//            String timeStr2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(tempTime);
-//            //one date
-//            List<RealTimeDataVo> vehiclePoints =  realTimeDataDao.findAllByVehicleIdByTimeSpan(vehicleId, timeStr1, timeStr2);
-//            speedList.add(calSpeed(vehiclePoints));
-//            lastTime = tempTime;
-//        }
-        while(!lastTime.equals(loopEndTime) & tempIdx < vehiclePoints.size()) {
-            Timestamp endTime = new Timestamp(lastTime.getTime() + TIMESTEP);
-            tempIdx = firstIndex;
-            Timestamp tempTime = Timestamp.valueOf(vehiclePoints.get(tempIdx).getRecordedTime());
+        Integer allPointsCount = vehiclePoints.size();
+        while(!lastTime.equals(dateEnd) & tempIndex < allPointsCount) {
+            Timestamp timeSpanEnd = new Timestamp(lastTime.getTime() + TIMESTEP);
+            tempIndex = firstIndex;
+            Timestamp tempTime = Timestamp.valueOf(vehiclePoints.get(tempIndex).getRecordedTime());
             //every timespan
-            while(tempTime.getTime() < endTime.getTime() & tempIdx < vehiclePoints.size()) {
-                tempTime = Timestamp.valueOf(vehiclePoints.get(tempIdx).getRecordedTime());
-                tempIdx += 1;
+            while(tempTime.getTime() < timeSpanEnd.getTime() & tempIndex < allPointsCount) {
+                tempTime = Timestamp.valueOf(vehiclePoints.get(tempIndex).getRecordedTime());
+                tempIndex += 1;
             }
-            if(!firstIndex.equals(tempIdx)) {
-                List<RealTimeDataVo> PointswithinTimeSpan = vehiclePoints.subList(firstIndex, tempIdx - 1);
+            if(!firstIndex.equals(tempIndex)) {
+                List<RealTimeDataVo> PointswithinTimeSpan = vehiclePoints.subList(firstIndex, tempIndex - 1);
                 speedList.add(calSpeed(PointswithinTimeSpan));
             }  else {
                 speedList.add(0.0);
             }
-
-            firstIndex = tempIdx;
-            lastTime = endTime;
+            if (firstIndex.equals(tempIndex))
+                firstIndex = tempIndex;
+            else
+                firstIndex = tempIndex-1;
+            lastTime = timeSpanEnd;
         }
 //        speedList.size() 24*4
         while(speedList.size() < 24*4) {
             speedList.add(0.0);
         }
-        SpeedDateData result = new SpeedDateData(start.toString().substring(5,10), speedList);
+        SpeedDateData result = new SpeedDateData(dateStart.toString().substring(5,10), speedList);
         return result;
     }
 
     private Double calSpeed(List<RealTimeDataVo> realTimeDataVos) {
         TimeUtil timeUtil = new TimeUtil();
-        if(realTimeDataVos.size() == 0) return 0.0;
+        if(realTimeDataVos.size() == 0 || realTimeDataVos.size() == 1) return 0.0;
         Double dist = 0.0; //km
         String startTime = realTimeDataVos.get(0).getRecordedTime();
         String endTime = realTimeDataVos.get(realTimeDataVos.size()-1).getRecordedTime();
