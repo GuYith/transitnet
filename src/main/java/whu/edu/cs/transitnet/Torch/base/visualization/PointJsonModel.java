@@ -12,4 +12,12 @@ public class PointJsonModel {
     public PointJsonModel(Double lon, Double lat) {
         geometry = new Geometry(lon, lat);
     }
+
+    public Geometry getGeometry() {
+        return geometry;
+    }
+
+    public void setGeometry(Geometry geometry) {
+        this.geometry = geometry;
+    }
 }

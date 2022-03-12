@@ -24,6 +24,8 @@ public class RealTimeDataEntity {
     private String nextStop;
     private String recordedTime;
 
+
+
     @Basic
     @Column(name = "route_id")
     public String getRouteId() {

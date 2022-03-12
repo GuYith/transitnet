@@ -28,7 +28,6 @@ public class MapVService {
     TripsDao tripsDao;
     @Autowired
     StopsDao stopsDao;
-    //TODO modify the code: 1. use the torch model 2. setfunction may be better in the class
     public RoutesVo getRouteVoByRouteIdAndTripId(String routeId, String tripId) {
         List<ShapesVo> shapesVos = shapesDao.findAllByRouteIdAndTripId(routeId, tripId);
         List<TrajEntry> trajEntries = new ArrayList<>();
@@ -59,7 +58,7 @@ public class MapVService {
         }
         return routesVos;
     }
-
+    //TODO 这部分前后端都不需要 可以去掉
     public List<Double> getRouteTimeList(String routeId, String tripId) {
         TimeUtil timeUtil = new TimeUtil();
         List<ShapesVo> shapesVos = shapesDao.findAllByRouteIdAndTripId(routeId, tripId);
