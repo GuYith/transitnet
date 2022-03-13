@@ -6,6 +6,7 @@ import whu.edu.cs.transitnet.dao.RealTimeDataDao;
 import whu.edu.cs.transitnet.pojo.RealTimeDataEntity;
 import whu.edu.cs.transitnet.utils.TimeUtil;
 import whu.edu.cs.transitnet.vo.RealTimeDataVo;
+import whu.edu.cs.transitnet.vo.RealTimePointEntity;
 import whu.edu.cs.transitnet.vo.SpeedDateData;
 
 import java.sql.Date;
@@ -28,19 +29,24 @@ public class RealTimeDataService {
         return realTimeDataDao.findAllByVehicleIdAndRecordedTime(vehicleId, recordedTime);
     }
 
-    public List<RealTimeDataEntity> getRealTimeDataLastByRecordedTime(Timestamp curTime) {
+    public List<RealTimeDataVo> getRealTimeDataVoLastByRecordedTime(Timestamp curTime) {
         Timestamp end = curTime;
         Timestamp start = new Timestamp(curTime.getTime() - LASTTIMESPAN);
         String startTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(start);
         String endTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(end);
-        System.out.println(startTime);
-        System.out.println(endTime);
         List<RealTimeDataEntity> realTimeDataEntities = realTimeDataDao.findAllLastByRecordedTimeSpan(startTime, endTime);
-
+        List<RealTimePointEntity> realTimePointEntities = realTimeDataDao.findAllVehiclePointsByTimeSpan(startTime, endTime);
+        List<RealTimeDataVo> realTimeDataVos = new ArrayList<>();
         for (RealTimeDataEntity re: realTimeDataEntities) {
-            System.out.println(re.getVehicleId());
+            String curVehicleId = re.getVehicleId();
+            List<RealTimePointEntity> tempList = new ArrayList<>();
+            for (RealTimePointEntity rtp: realTimePointEntities) {
+                if(rtp.getVehicleId().equals(curVehicleId)) tempList.add(rtp);
+            }
+            Double speed = calSpeed(tempList);
+            realTimeDataVos.add(new RealTimeDataVo(re, speed));
         }
-        return realTimeDataEntities;
+        return realTimeDataVos;
     }
     public List<String> getVehicleIdList(String recordedTime) {
         return realTimeDataDao.findAllVehicleIdByRecordedTime(recordedTime);
@@ -57,17 +63,14 @@ public class RealTimeDataService {
         System.out.println("endTime: " + endTime);
         String timeStr1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(startTime);
         String timeStr2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(endTime);
-        List<RealTimeDataVo> vehiclePoints =  realTimeDataDao.findAllByVehicleIdByTimeSpan(vehicleId, timeStr1, timeStr2);
+        List<RealTimePointEntity> vehiclePoints =  realTimeDataDao.findAllVehiclePointsByVehicleIdByTimeSpan(vehicleId, timeStr1, timeStr2);
         Timestamp loopEndTime = new Timestamp(lastDate.getTime() + TIMEDATE);
-
         Integer allPointsCount = vehiclePoints.size();
         firstIndex = 0;
         tempIndex = 0;
         while (!startTime.equals(loopEndTime)) {
             Timestamp dateStart = startTime;
             Timestamp dateEnd = new Timestamp(dateStart.getTime() + TIMEDATE);
-            System.out.println("firstIdx: " + firstIndex);
-            System.out.println("tempIdx: " + tempIndex);
             SpeedDateData speedDateData = getSpeedDateListByVehicleIdAndDate(dateStart, dateEnd,
                                                             vehiclePoints);
             speedDateDatas.add(speedDateData);
@@ -77,7 +80,7 @@ public class RealTimeDataService {
     }
 
     public SpeedDateData getSpeedDateListByVehicleIdAndDate(Timestamp dateStart, Timestamp dateEnd,
-                                                            List<RealTimeDataVo> vehiclePoints) {
+                                                            List<RealTimePointEntity> vehiclePoints) {
         Timestamp lastTime = dateStart;
         List<Double> speedList = new ArrayList<>();
         Integer allPointsCount = vehiclePoints.size();
@@ -91,7 +94,7 @@ public class RealTimeDataService {
                 tempIndex += 1;
             }
             if(!firstIndex.equals(tempIndex)) {
-                List<RealTimeDataVo> PointswithinTimeSpan = vehiclePoints.subList(firstIndex, tempIndex - 1);
+                List<RealTimePointEntity> PointswithinTimeSpan = vehiclePoints.subList(firstIndex, tempIndex - 1);
                 speedList.add(calSpeed(PointswithinTimeSpan));
             }  else {
                 speedList.add(0.0);
@@ -110,21 +113,21 @@ public class RealTimeDataService {
         return result;
     }
 
-    private Double calSpeed(List<RealTimeDataVo> realTimeDataVos) {
+    private Double calSpeed(List<RealTimePointEntity> realTimePointEntities) {
         TimeUtil timeUtil = new TimeUtil();
-        if(realTimeDataVos.size() == 0 || realTimeDataVos.size() == 1) return 0.0;
+        if(realTimePointEntities.size() == 0 || realTimePointEntities.size() == 1) return 0.0;
         Double dist = 0.0; //km
-        String startTime = realTimeDataVos.get(0).getRecordedTime();
-        String endTime = realTimeDataVos.get(realTimeDataVos.size()-1).getRecordedTime();
-        for (Integer i = 0; i < realTimeDataVos.size()-1; i ++) {
-            RealTimeDataVo rtv1 = realTimeDataVos.get(0);
-            RealTimeDataVo rtv2 = realTimeDataVos.get(1);
+        String startTime = realTimePointEntities.get(0).getRecordedTime();
+        String endTime = realTimePointEntities.get(realTimePointEntities.size()-1).getRecordedTime();
+        for (Integer i = 0; i < realTimePointEntities.size()-1; i ++) {
+            RealTimePointEntity rtv1 = realTimePointEntities.get(0);
+            RealTimePointEntity rtv2 = realTimePointEntities.get(1);
             dist += timeUtil.getDistance(rtv1.getLon(), rtv1.getLat(), rtv2.getLon(), rtv2.getLat());
         }
         Timestamp time1 =  Timestamp.valueOf(startTime);
         Timestamp time2 =  Timestamp.valueOf(endTime);
         long span = (time2.getTime() - time1.getTime()) / 1000; //  s
-        Double speed = dist*3600/span;
-        return speed;
+        if(span == 0) return 0.0;
+        else return dist*3600/span;
     }
 }

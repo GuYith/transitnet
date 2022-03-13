@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import whu.edu.cs.transitnet.pojo.RealTimeDataEntity;
 import whu.edu.cs.transitnet.service.RealTimeDataService;
+import whu.edu.cs.transitnet.vo.RealTimeDataVo;
 import whu.edu.cs.transitnet.vo.SpeedDateData;
 
 import javax.annotation.Resource;
@@ -18,28 +18,13 @@ public class RealTimeDataController {
     @Resource
     RealTimeDataService realTimeDataService;
 
-//    /**
-//     * Get real time data by vehicleId and recordedTime
-//     * @param vehicleId
-//     * @param recordedTime
-//     * @return RealTimeDataEntity
-//     */
-//    @CrossOrigin
-//    @GetMapping("/api/realTime")
-//    @ResponseBody
-//    public RealTimeDataEntity listRealTimeDataByVehicleIdAndRecordedTime(@RequestParam("vehicleId") String vehicleId, @RequestParam("recordedTime")String recordedTime) {
-//        return realTimeDataService.getRealTimeDataEntityByVehicleIdAndRecordedTime(vehicleId, recordedTime);
-//    }
-
     @CrossOrigin
     @GetMapping("/api/realTime")
     @ResponseBody
-    public List<RealTimeDataEntity> listRealTimeDataLastByRecordedTime(@RequestParam("curTime") String curTime) {
+    public List<RealTimeDataVo> listRealTimeDataLastByRecordedTime(@RequestParam("curTime") String curTime) {
         Timestamp d = Timestamp.valueOf(curTime);
-        return realTimeDataService.getRealTimeDataLastByRecordedTime(d);
+        return realTimeDataService.getRealTimeDataVoLastByRecordedTime(d);
     }
-
-
 
     /**
      * Get vehicle list by recordedTime

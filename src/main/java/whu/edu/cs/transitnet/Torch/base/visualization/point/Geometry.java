@@ -17,6 +17,15 @@ public class Geometry {
         coordinates[0]= lon;
         coordinates[1] = lng;
     }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     public double[] getCoordinates() {
         return coordinates;
     }

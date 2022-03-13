@@ -5,9 +5,8 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "real_time_data_temp", schema = "gtfs_data")
+@IdClass(RealTimeDataEntityPK.class)
 public class RealTimeDataEntity {
-    @Id
-
     private String routeId;
     private String direction;
     private String tripId;
@@ -23,8 +22,6 @@ public class RealTimeDataEntity {
     private String distanceFromNextStop;
     private String nextStop;
     private String recordedTime;
-
-
 
     @Basic
     @Column(name = "route_id")
@@ -46,7 +43,7 @@ public class RealTimeDataEntity {
         this.direction = direction;
     }
 
-    @Basic
+    @Id
     @Column(name = "trip_id")
     public String getTripId() {
         return tripId;
@@ -106,7 +103,7 @@ public class RealTimeDataEntity {
         this.bearing = bearing;
     }
 
-    @Basic
+    @Id
     @Column(name = "vehicle_id")
     public String getVehicleId() {
         return vehicleId;
@@ -166,7 +163,7 @@ public class RealTimeDataEntity {
         this.nextStop = nextStop;
     }
 
-    @Basic
+    @Id
     @Column(name = "recorded_time")
     public String getRecordedTime() {
         return recordedTime;

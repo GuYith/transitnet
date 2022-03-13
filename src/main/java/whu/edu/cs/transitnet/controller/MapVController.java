@@ -58,19 +58,4 @@ public class MapVController {
         Date eD = Date.valueOf(endDate);
         return mapVService.getRoutesVoByTimeSpan(sD, eD);
     }
-
-    /**
-     * Get time list for one trip of route
-     * @param routeId
-     * @param tripId
-     * @return
-     */
-    @CrossOrigin
-    @GetMapping("/api/mapv/timeList")
-    @ResponseBody
-    public List<Double> listTrajTimeByRouteIdTripId(@RequestParam(value = "routeId") String routeId, @RequestParam(value = "tripId") String tripId) {
-        return mapVService.getRouteTimeList(routeId, tripId);
-    }
-
-
 }

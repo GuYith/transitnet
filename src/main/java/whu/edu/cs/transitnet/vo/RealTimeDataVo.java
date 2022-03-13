@@ -1,37 +1,29 @@
 package whu.edu.cs.transitnet.vo;
 
+import whu.edu.cs.transitnet.pojo.RealTimeDataEntity;
+
 public class RealTimeDataVo {
-    private Double lat;
-    private Double lon;
-    private String recordedTime;
+    private RealTimeDataEntity vehicle;
+    private Double speed;
 
-    public RealTimeDataVo(Double lat, Double lon, String recordedTime) {
-        this.lat = lat;
-        this.lon = lon;
-        this.recordedTime = recordedTime;
+    public RealTimeDataVo(RealTimeDataEntity point, Double speed) {
+        this.vehicle = point;
+        this.speed = speed;
     }
 
-    public Double getLat() {
-        return lat;
+    public RealTimeDataEntity getPoint() {
+        return vehicle;
     }
 
-    public void setLat(Double lat) {
-        this.lat = lat;
+    public void setPoint(RealTimeDataEntity vehicle) {
+        this.vehicle = vehicle;
     }
 
-    public Double getLon() {
-        return lon;
+    public Double getSpeed() {
+        return speed;
     }
 
-    public void setLon(Double lon) {
-        this.lon = lon;
-    }
-
-    public String getRecordedTime() {
-        return recordedTime;
-    }
-
-    public void setRecordedTime(String recordedTime) {
-        this.recordedTime = recordedTime;
+    public void setSpeed(Double speed) {
+        this.speed = speed;
     }
 }

@@ -58,7 +58,6 @@ public class MapVService {
         }
         return routesVos;
     }
-    //TODO 这部分前后端都不需要 可以去掉
     public List<Double> getRouteTimeList(String routeId, String tripId) {
         TimeUtil timeUtil = new TimeUtil();
         List<ShapesVo> shapesVos = shapesDao.findAllByRouteIdAndTripId(routeId, tripId);
