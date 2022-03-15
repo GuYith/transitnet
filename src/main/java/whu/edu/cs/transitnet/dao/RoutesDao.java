@@ -18,9 +18,9 @@ public interface RoutesDao extends JpaRepository<RoutesEntity, String> {
             + "WHERE re.routeId = ?1")
     RoutesVo findRoutesVoByRouteId(String routeId);
 
-    @Query("SELECT re FROM RoutesEntity re "
+    @Query("SELECT DISTINCT re FROM RoutesEntity re "
             + "LEFT JOIN TripsEntity te ON te.routeId = re.routeId "
             + "LEFT JOIN CalendarEntity ce ON ce.serviceId= te.serviceId "
             + "WHERE ce.startDate <= ?1 AND ce.endDate >= ?2")
-    List<RoutesEntity> findRoutesVoByTimeSpan(Date startDate, Date endDate);
+    List<RoutesEntity> findRoutesByTimeSpan(Date startDate, Date endDate);
 }

@@ -18,6 +18,6 @@ public class RoutesService {
     }
 
     public List<RoutesEntity> getAllRoutesByTimeSpan(Date startDate, Date endDate) {
-        return routesDao.findRoutesVoByTimeSpan(startDate, endDate);
+        return routesDao.findRoutesByTimeSpan(startDate, endDate);
     }
 }
