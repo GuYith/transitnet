@@ -43,7 +43,7 @@ public class RealTimeDataEntity {
         this.direction = direction;
     }
 
-    @Id
+    @Basic
     @Column(name = "trip_id")
     public String getTripId() {
         return tripId;

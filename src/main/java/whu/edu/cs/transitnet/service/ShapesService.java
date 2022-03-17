@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import whu.edu.cs.transitnet.dao.ShapesDao;
 import whu.edu.cs.transitnet.pojo.ShapesEntity;
-import whu.edu.cs.transitnet.vo.ShapesVo;
+import whu.edu.cs.transitnet.vo.ShapePointVo;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ public class ShapesService {
     @Autowired
     ShapesDao shapesDao;
 
-    public List<ShapesVo> getShapesByRouteIdAndTripId(String routeId, String tripId) {
+    public List<ShapePointVo> getShapesByRouteIdAndTripId(String routeId, String tripId) {
         return shapesDao.findAllByRouteIdAndTripId(routeId, tripId);
     }
     public ShapesEntity getByKey(String shapeId, String shapeSequence) {

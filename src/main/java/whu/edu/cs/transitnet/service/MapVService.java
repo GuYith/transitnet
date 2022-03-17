@@ -2,7 +2,6 @@ package whu.edu.cs.transitnet.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import whu.edu.cs.transitnet.Torch.base.model.TrajEntry;
 import whu.edu.cs.transitnet.Torch.base.visualization.TrajJsonModel;
 import whu.edu.cs.transitnet.dao.RoutesDao;
 import whu.edu.cs.transitnet.dao.ShapesDao;
@@ -11,7 +10,7 @@ import whu.edu.cs.transitnet.dao.TripsDao;
 import whu.edu.cs.transitnet.pojo.TripsEntity;
 import whu.edu.cs.transitnet.utils.TimeUtil;
 import whu.edu.cs.transitnet.vo.RoutesVo;
-import whu.edu.cs.transitnet.vo.ShapesVo;
+import whu.edu.cs.transitnet.vo.ShapePointVo;
 import whu.edu.cs.transitnet.vo.StopsVo;
 
 import java.sql.Date;
@@ -29,13 +28,9 @@ public class MapVService {
     @Autowired
     StopsDao stopsDao;
     public RoutesVo getRouteVoByRouteIdAndTripId(String routeId, String tripId) {
-        List<ShapesVo> shapesVos = shapesDao.findAllByRouteIdAndTripId(routeId, tripId);
-        List<TrajEntry> trajEntries = new ArrayList<>();
-        for (ShapesVo sv: shapesVos) {
-            trajEntries.add(sv);
-        }
+        List<ShapePointVo> shapePointVos = shapesDao.findAllByRouteIdAndTripId(routeId, tripId);
         RoutesVo routesVo = routesDao.findRoutesVoByRouteId(routeId);
-        routesVo.setTrajJsonModel(new TrajJsonModel(trajEntries));
+        routesVo.setTrajJsonModel(new TrajJsonModel(shapePointVos));
         return routesVo;
     }
 
@@ -60,9 +55,9 @@ public class MapVService {
     }
     public List<Double> getRouteTimeList(String routeId, String tripId) {
         TimeUtil timeUtil = new TimeUtil();
-        List<ShapesVo> shapesVos = shapesDao.findAllByRouteIdAndTripId(routeId, tripId);
+        List<ShapePointVo> shapePointVos = shapesDao.findAllByRouteIdAndTripId(routeId, tripId);
         List<StopsVo> stopsVos = stopsDao.findAllByTripId(tripId);
-        List<Double> timeList = timeUtil.CalculateVehicleStopArriveTimes(stopsVos, shapesVos);
+        List<Double> timeList = timeUtil.CalculateVehicleStopArriveTimes(stopsVos, shapePointVos);
         return timeList;
     }
 }

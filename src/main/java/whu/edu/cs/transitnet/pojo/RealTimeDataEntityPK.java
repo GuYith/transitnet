@@ -7,7 +7,6 @@ import java.util.Objects;
 
 public class RealTimeDataEntityPK implements Serializable {
     private String vehicleId;
-    private String tripId;
     private String recordedTime;
 
     @Column(name = "vehicle_id")
@@ -18,16 +17,6 @@ public class RealTimeDataEntityPK implements Serializable {
 
     public void setVehicleId(String vehicleId) {
         this.vehicleId = vehicleId;
-    }
-
-    @Column(name = "trip_id")
-    @Id
-    public String getTripId() {
-        return tripId;
-    }
-
-    public void setTripId(String tripId) {
-        this.tripId = tripId;
     }
 
     @Column(name = "recorded_time")
@@ -47,12 +36,11 @@ public class RealTimeDataEntityPK implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         RealTimeDataEntityPK that = (RealTimeDataEntityPK) o;
         return Objects.equals(vehicleId, that.vehicleId) &&
-                Objects.equals(tripId, that.tripId) &&
                 Objects.equals(recordedTime, that.recordedTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(vehicleId, tripId, recordedTime);
+        return Objects.hash(vehicleId, recordedTime);
     }
 }

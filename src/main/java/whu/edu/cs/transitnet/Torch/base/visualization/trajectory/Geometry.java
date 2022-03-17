@@ -1,6 +1,6 @@
 package whu.edu.cs.transitnet.Torch.base.visualization.trajectory;
 
-import whu.edu.cs.transitnet.Torch.base.model.TrajEntry;
+import whu.edu.cs.transitnet.vo.ShapePointVo;
 
 import java.util.List;
 public class Geometry {
@@ -11,7 +11,7 @@ public class Geometry {
     //order is vital
     double[][] coordinates;
 
-    public Geometry(List<TrajEntry> path){
+    public Geometry(List<ShapePointVo> path){
         int pathLen = path == null ? 0 : path.size();
         coordinates = new double[pathLen][2];
         for (int i = 0; i < pathLen; i++){

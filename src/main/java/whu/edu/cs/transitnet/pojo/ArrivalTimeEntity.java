@@ -8,8 +8,8 @@ import java.util.Objects;
 @Table(name = "arrival_time", schema = "gtfs_data")
 public class ArrivalTimeEntity {
     private Timestamp timeSpan;
-    private String allCount;
-    private String lateCount;
+    private Integer allCount;
+    private Integer lateCount;
 
     @Id
     @Column(name = "time_span")
@@ -23,21 +23,21 @@ public class ArrivalTimeEntity {
 
     @Basic
     @Column(name = "all_count")
-    public String getAllCount() {
+    public Integer getAllCount() {
         return allCount;
     }
 
-    public void setAllCount(String allCount) {
+    public void setAllCount(Integer allCount) {
         this.allCount = allCount;
     }
 
     @Basic
     @Column(name = "late_count")
-    public String getLateCount() {
+    public Integer getLateCount() {
         return lateCount;
     }
 
-    public void setLateCount(String lateCount) {
+    public void setLateCount(Integer lateCount) {
         this.lateCount = lateCount;
     }
 

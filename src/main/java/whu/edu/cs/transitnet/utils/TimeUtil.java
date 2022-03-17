@@ -1,7 +1,7 @@
 package whu.edu.cs.transitnet.utils;
 
 import org.springframework.stereotype.Component;
-import whu.edu.cs.transitnet.vo.ShapesVo;
+import whu.edu.cs.transitnet.vo.ShapePointVo;
 import whu.edu.cs.transitnet.vo.StopsVo;
 
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ public class TimeUtil {
     private static double EARTH_RADIUS = 6378.137;
     public static TimeUtil timeUtil;
 
-    public List<Double> CalculateVehicleStopArriveTimes(List<StopsVo> stopsVos, List<ShapesVo> shapesVos) {
+    public List<Double> CalculateVehicleStopArriveTimes(List<StopsVo> stopsVos, List<ShapePointVo> shapePointVos) {
         System.out.println("Calculating Route Time...");
         List<Integer> nearestIdxs = new ArrayList<Integer>(); //closest List of shape points index for every stop
         StopsVo lastStop = null;
@@ -24,8 +24,8 @@ public class TimeUtil {
         for (StopsVo stop: stopsVos) {
             double minDistance = Double.MAX_VALUE;
             Integer idx = 0;
-            for(Integer i = 0; i < shapesVos.size(); i ++) {
-                ShapesVo shape = shapesVos.get(i);
+            for(Integer i = 0; i < shapePointVos.size(); i ++) {
+                ShapePointVo shape = shapePointVos.get(i);
                 double distance = getDistance(stop.getLng(), stop.getLat(), shape.getLng(), shape.getLat());
                 if(distance < minDistance) {
                     idx = i;
@@ -42,22 +42,22 @@ public class TimeUtil {
             System.out.println(idx);
         }
         Integer stopIdx = 0;
-        ShapesVo stopNearest = shapesVos.get(nearestIdxs.get(stopIdx));
-        ShapesVo lastShape = null;
+        ShapePointVo stopNearest = shapePointVos.get(nearestIdxs.get(stopIdx));
+        ShapePointVo lastShape = null;
         List<Double> times = new ArrayList<Double>();
         //calculate the time span between stops by distance and speedList
-        for(Integer i = 0; i < shapesVos.size(); i ++) {
-            ShapesVo shapesVo = shapesVos.get(i);
+        for(Integer i = 0; i < shapePointVos.size(); i ++) {
+            ShapePointVo shapePointVo = shapePointVos.get(i);
             if(i > 0) {
-                double s = getDistance(shapesVo.getLng(), shapesVo.getLat(), lastShape.getLng(), lastShape.getLat());
+                double s = getDistance(shapePointVo.getLng(), shapePointVo.getLat(), lastShape.getLng(), lastShape.getLat());
                 double t = s/speeds.get(stopIdx);
                 times.add(t*500);
             }
-            lastShape = shapesVo;
-            if(i != 0 && stopNearest.getLat() == shapesVo.getLat() && stopNearest.getLng() == shapesVo.getLng()) {
+            lastShape = shapePointVo;
+            if(i != 0 && stopNearest.getLat() == shapePointVo.getLat() && stopNearest.getLng() == shapePointVo.getLng()) {
                 System.out.println(i);
                 stopIdx ++;
-                stopNearest = shapesVos.get(nearestIdxs.get(stopIdx));
+                stopNearest = shapePointVos.get(nearestIdxs.get(stopIdx));
             }
         }
         System.out.println("Finish the Calculation");

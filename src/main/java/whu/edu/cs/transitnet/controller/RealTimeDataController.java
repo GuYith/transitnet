@@ -26,7 +26,7 @@ public class RealTimeDataController {
         return realTimeDataService.getRealTimeDataVoLastByRecordedTime(d);
     }
 
-    /**
+    /**http://localhost:8090/api/mapv/origin
      * Get vehicle list by recordedTime
      * @param recordedTime
      * @return List<String>
