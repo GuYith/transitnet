@@ -55,7 +55,8 @@ public class RealTimeDataService {
     public List<SpeedDateData> getSpeedDateListByVehicleIdLastSevenDate(String vehicleId, String curTimeStr) {
         List<SpeedDateData> speedDateDatas = new ArrayList<>();
         Timestamp curTime = Timestamp.valueOf(curTimeStr);
-        String curTimeDate = curTimeStr.substring(0,10);
+        String curTimeDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(curTime);
+        curTimeDate = curTimeDate.substring(0,10);
         Date lastDate = Date.valueOf(curTimeDate);
         Timestamp startTime = new Timestamp(lastDate.getTime() - 6*TIMEDATE);
         Timestamp endTime = curTime;
