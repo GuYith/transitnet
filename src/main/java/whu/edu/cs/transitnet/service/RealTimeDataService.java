@@ -1,19 +1,22 @@
 package whu.edu.cs.transitnet.service;
 
+import javafx.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import whu.edu.cs.transitnet.dao.RealTimeDataDao;
+import whu.edu.cs.transitnet.pojo.IndexEntity;
 import whu.edu.cs.transitnet.pojo.RealTimeDataEntity;
 import whu.edu.cs.transitnet.utils.TimeUtil;
 import whu.edu.cs.transitnet.vo.RealTimeDataVo;
 import whu.edu.cs.transitnet.vo.RealTimePointEntity;
-import whu.edu.cs.transitnet.vo.SpeedDateData;
+import whu.edu.cs.transitnet.vo.SpeedDateVo;
 
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class RealTimeDataService {
@@ -52,39 +55,39 @@ public class RealTimeDataService {
         return realTimeDataDao.findAllVehicleIdByRecordedTime(recordedTime);
     }
 
-    public List<SpeedDateData> getSpeedDateListByVehicleIdLastSevenDate(String vehicleId, String curTimeStr) {
-        List<SpeedDateData> speedDateDatas = new ArrayList<>();
+    public List<SpeedDateVo> getSpeedDateListByVehicleIdLastSevenDate(String vehicleId, String curTimeStr) {
+        List<SpeedDateVo> speedDateVos = new ArrayList<>();
         Timestamp curTime = Timestamp.valueOf(curTimeStr);
         String curTimeDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(curTime);
         curTimeDate = curTimeDate.substring(0,10);
         Date lastDate = Date.valueOf(curTimeDate);
         Timestamp startTime = new Timestamp(lastDate.getTime() - 6*TIMEDATE);
         Timestamp endTime = curTime;
-        System.out.println("startTime: " + startTime);
-        System.out.println("endTime: " + endTime);
         String timeStr1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(startTime);
         String timeStr2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(endTime);
-        List<RealTimePointEntity> vehiclePoints =  realTimeDataDao.findAllVehiclePointsByVehicleIdByTimeSpan(vehicleId, timeStr1, timeStr2);
+        List<RealTimePointEntity> vehiclePoints =  realTimeDataDao.findAllPointsByVehicleIdByTimeSpan(vehicleId, timeStr1, timeStr2);
         Timestamp loopEndTime = new Timestamp(lastDate.getTime() + TIMEDATE);
         Integer allPointsCount = vehiclePoints.size();
         firstIndex = 0;
         tempIndex = 0;
+        IndexEntity indexEntity = new IndexEntity(0,0);
         while (!startTime.equals(loopEndTime)) {
             Timestamp dateStart = startTime;
             Timestamp dateEnd = new Timestamp(dateStart.getTime() + TIMEDATE);
-            SpeedDateData speedDateData = getSpeedDateListByVehicleIdAndDate(dateStart, dateEnd,
-                                                            vehiclePoints);
-            speedDateDatas.add(speedDateData);
+            SpeedDateVo speedDateVo = getSpeedDateVoByTimeSpan(dateStart, dateEnd,
+                                                            vehiclePoints, indexEntity);
+            speedDateVos.add(speedDateVo);
             startTime = dateEnd;
         }
-        return speedDateDatas;
+        return speedDateVos;
     }
 
-    public SpeedDateData getSpeedDateListByVehicleIdAndDate(Timestamp dateStart, Timestamp dateEnd,
-                                                            List<RealTimePointEntity> vehiclePoints) {
+    public List<Double> getSpeedListByPointList(Timestamp dateStart, Timestamp dateEnd, List<? extends RealTimePointEntity> vehiclePoints, IndexEntity indexEntity) {
         Timestamp lastTime = dateStart;
         List<Double> speedList = new ArrayList<>();
         Integer allPointsCount = vehiclePoints.size();
+        Integer tempIndex = indexEntity.getTempIndex();
+        Integer firstIndex = indexEntity.getFirstIndex();
         while(!lastTime.equals(dateEnd) & tempIndex < allPointsCount) {
             Timestamp timeSpanEnd = new Timestamp(lastTime.getTime() + TIMESTEP);
             tempIndex = firstIndex;
@@ -95,7 +98,7 @@ public class RealTimeDataService {
                 tempIndex += 1;
             }
             if(!firstIndex.equals(tempIndex)) {
-                List<RealTimePointEntity> PointswithinTimeSpan = vehiclePoints.subList(firstIndex, tempIndex - 1);
+                List<? extends RealTimePointEntity> PointswithinTimeSpan = vehiclePoints.subList(firstIndex, tempIndex - 1);
                 speedList.add(calSpeed(PointswithinTimeSpan));
             }  else {
                 speedList.add(0.0);
@@ -110,11 +113,19 @@ public class RealTimeDataService {
         while(speedList.size() < 24*4) {
             speedList.add(0.0);
         }
-        SpeedDateData result = new SpeedDateData(dateStart.toString().substring(5,10), speedList);
+        indexEntity.setFirstIndex(firstIndex);
+        indexEntity.setTempIndex(tempIndex);
+        return speedList;
+    }
+
+    public SpeedDateVo getSpeedDateVoByTimeSpan(Timestamp dateStart, Timestamp dateEnd,
+                                                          List<? extends RealTimePointEntity> vehiclePoints, IndexEntity indexEntity) {
+        List<Double> speedList = getSpeedListByPointList(dateStart, dateEnd, vehiclePoints, indexEntity);
+        SpeedDateVo result = new SpeedDateVo(dateStart.toString().substring(5,10), speedList);
         return result;
     }
 
-    private Double calSpeed(List<RealTimePointEntity> realTimePointEntities) {
+    private Double calSpeed(List<? extends RealTimePointEntity> realTimePointEntities) {
         TimeUtil timeUtil = new TimeUtil();
         if(realTimePointEntities.size() == 0 || realTimePointEntities.size() == 1) return 0.0;
         Double dist = 0.0; //km
@@ -130,5 +141,115 @@ public class RealTimeDataService {
         long span = (time2.getTime() - time1.getTime()) / 1000; //  s
         if(span == 0) return 0.0;
         else return dist*3600/span;
+    }
+
+    public List<String > getRealTimeRouteOptionsByDate(Date date) {
+        Timestamp startTime = new Timestamp(date.getTime());
+        Timestamp endTime = new Timestamp(startTime.getTime() + TIMEDATE);
+        String startTimeString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(startTime);
+        String endTimeString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(endTime);
+        return realTimeDataDao.findAllRoutesByDate(startTimeString, endTimeString);
+    }
+
+    public List<String > getRealTimeTripOptionsByDate(String routeId, Date date) {
+        Timestamp startTime = new Timestamp(date.getTime());
+        Timestamp endTime = new Timestamp(startTime.getTime() + TIMEDATE);
+        String startTimeString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(startTime);
+        String endTimeString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(endTime);
+        return realTimeDataDao.findAllTripsByDate(routeId, startTimeString, endTimeString);
+    }
+    public List<SpeedDateVo> getSpeedDateListByRouteId(List<String> routeIdList, Date date) {
+        List<SpeedDateVo> routeSpeedList = new ArrayList<>();
+        for (String routeId: routeIdList) {
+            routeSpeedList.add(getSpeedDateByRouteId(routeId, date));
+        }
+        return routeSpeedList;
+    }
+
+    public List<SpeedDateVo> getSpeedDateListByTripId(List<String> tripIdList, Date date) {
+        List<SpeedDateVo> tripSpeedList = new ArrayList<>();
+        for (String tripId: tripIdList) {
+            tripSpeedList.add(getSpeedDateByTripId(tripId, date));
+        }
+        return tripSpeedList;
+    }
+
+    //TODO all Dao query Timestamp change to String
+    public SpeedDateVo getSpeedDateByRouteId(String routeId, Date date) {
+        List<SpeedDateVo> speedDateVos = new ArrayList<>();
+        Timestamp startTime = new Timestamp(date.getTime());
+        Timestamp endTime = new Timestamp(startTime.getTime() + TIMEDATE);
+        String startTimeString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(startTime);
+        String endTimeString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(endTime);
+        List<RealTimeDataEntity> routesPoints = realTimeDataDao.findAllPointsByRouteIdByTimeSpan(routeId, startTimeString, endTimeString);
+        List<Pair<String,String>> vehicleIdAndTripIdList = getVehicleIdAndTripIdListInPointsList(routesPoints);
+        for (Pair p: vehicleIdAndTripIdList) {
+            IndexEntity indexEntity = new IndexEntity(0,0);
+            List<RealTimeDataEntity> tempList = routesPoints.stream().filter(item -> item.getVehicleId().equals(p.getKey()) && item.getTripId().equals(p.getValue()))
+                    .collect(Collectors.toList());
+            speedDateVos.add(getSpeedDateVoByTimeSpan(startTime, endTime, tempList, indexEntity));
+        }
+        SpeedDateVo result = new SpeedDateVo(routeId, date.toString(), calMeanSpeed(speedDateVos));
+        return result;
+    }
+
+    public SpeedDateVo getSpeedDateByTripId(String tripId, Date date) {
+        List<SpeedDateVo> speedDateVos = new ArrayList<>();
+        Timestamp startTime = new Timestamp(date.getTime());
+        Timestamp endTime = new Timestamp(startTime.getTime() + TIMEDATE);
+        String startTimeString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(startTime);
+        String endTimeString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(endTime);
+        List<RealTimeDataEntity> tripsPoints = realTimeDataDao.findAllPointsByTripIdByTimeSpan(tripId, startTimeString, endTimeString);
+        List<String> vehicleIdList = getVehicleIdListInPointsList(tripsPoints);
+        for (String vId: vehicleIdList) {
+            IndexEntity indexEntity = new IndexEntity(0,0);
+            List<RealTimeDataEntity> tempList = tripsPoints.stream().filter(item -> item.getVehicleId().equals(vId))
+                    .collect(Collectors.toList());
+            speedDateVos.add(getSpeedDateVoByTimeSpan(startTime, endTime, tempList, indexEntity));
+        }
+        SpeedDateVo result = new SpeedDateVo(tripId, date.toString(), calMeanSpeed(speedDateVos));
+        return result;
+    }
+
+    public List<Pair<String, String>> getVehicleIdAndTripIdListInPointsList(List<RealTimeDataEntity> routesPoints) {
+        List<Pair<String, String>> result = new ArrayList<>();
+        for (RealTimeDataEntity rtpt: routesPoints) {
+            String vId = rtpt.getVehicleId();
+            String tId = rtpt.getTripId();
+            Pair<String, String> pair = new Pair<>(vId, tId);
+            if(result.contains(pair) == false)
+                result.add(pair);
+        }
+        return result;
+    }
+
+    public List<String> getVehicleIdListInPointsList(List<RealTimeDataEntity> routesPoints) {
+        List<String> result = new ArrayList<>();
+        for (RealTimeDataEntity rtpt: routesPoints) {
+            String vId = rtpt.getVehicleId();
+            if(result.contains(vId) == false)
+                result.add(vId);
+        }
+        return result;
+    }
+
+    public List<Double> calMeanSpeed(List<SpeedDateVo> speedDateVos) {
+        double[] speedList = new double[96];
+        int[] countList = new int[96];
+        List<Double> resultSpeed = new ArrayList<>();
+        for (SpeedDateVo sd: speedDateVos) {
+            List<Double> tempSpeedList = sd.getSpeedList();
+            for(int i = 0; i < 96; i ++) {
+                if(!tempSpeedList.get(i).equals(0.0)) {
+                    speedList[i] += tempSpeedList.get(i);
+                    countList[i] += 1;
+                }
+            }
+        }
+        for(int i = 0; i < 96; i ++) {
+            if(countList[i] == 0) resultSpeed.add(0.0);
+            else resultSpeed.add(speedList[i] / countList[i]);
+        }
+        return resultSpeed;
     }
 }

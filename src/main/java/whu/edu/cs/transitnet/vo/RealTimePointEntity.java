@@ -13,6 +13,14 @@ public class RealTimePointEntity {
         this.recordedTime = recordedTime;
     }
 
+    public RealTimePointEntity() {
+        this.vehicleId = null;
+        this.lat = null;
+        this.lon = null;
+        this.recordedTime = null;
+    }
+
+
     public String getVehicleId() {
         return vehicleId;
     }

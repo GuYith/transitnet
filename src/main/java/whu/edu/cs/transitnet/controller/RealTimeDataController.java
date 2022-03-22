@@ -1,15 +1,14 @@
 package whu.edu.cs.transitnet.controller;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import whu.edu.cs.transitnet.service.RealTimeDataService;
 import whu.edu.cs.transitnet.vo.RealTimeDataVo;
-import whu.edu.cs.transitnet.vo.SpeedDateData;
+import whu.edu.cs.transitnet.vo.SpeedDateVo;
+import whu.edu.cs.transitnet.vo.SpeedQueryVo;
 
 import javax.annotation.Resource;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -41,7 +40,41 @@ public class RealTimeDataController {
     @CrossOrigin
     @GetMapping("/api/realTime/speed")
     @ResponseBody
-    public List<SpeedDateData> ListSpeedDateByVehicleLastSevenDay(@RequestParam("vehicleId") String vehicleId, @RequestParam("curTime") String curTime) {
+    public List<SpeedDateVo> ListSpeedDateByVehicleLastSevenDay(@RequestParam("vehicleId") String vehicleId, @RequestParam("curTime") String curTime) {
         return realTimeDataService.getSpeedDateListByVehicleIdLastSevenDate(vehicleId, curTime);
+    }
+
+    @CrossOrigin
+    @GetMapping("/api/realTime/routeOptions")
+    @ResponseBody
+    public List<String> ListRealTimeRouteOptionsByDate(@RequestParam("date") String date) {
+        Date d = Date.valueOf(date);
+        return realTimeDataService.getRealTimeRouteOptionsByDate(d);
+    }
+
+    @CrossOrigin
+    @GetMapping("/api/realTime/tripOptions")
+    @ResponseBody
+    public List<String> ListRealTimeTripOptionsByDate(@RequestParam("routeId") String routeId, @RequestParam("date") String date) {
+        Date d = Date.valueOf(date);
+        return realTimeDataService.getRealTimeTripOptionsByDate(routeId, d);
+    }
+
+    @CrossOrigin
+    @PostMapping("/api/realTime/routeSpeed")
+    @ResponseBody
+    public List<SpeedDateVo> ListSpeedDateVoByRouteList(@RequestBody SpeedQueryVo speedQueryVo) {
+        List<String> routeList = speedQueryVo.getIdList();
+        Date date = Date.valueOf(speedQueryVo.getDateStr());
+        return realTimeDataService.getSpeedDateListByRouteId(routeList, date);
+    }
+
+    @CrossOrigin
+    @PostMapping("/api/realTime/tripSpeed")
+    @ResponseBody
+    public List<SpeedDateVo> ListSpeedDateVoByTripList(@RequestBody SpeedQueryVo speedQueryVo) {
+        List<String> tripList = speedQueryVo.getIdList();
+        Date date = Date.valueOf(speedQueryVo.getDateStr());
+        return realTimeDataService.getSpeedDateListByTripId(tripList, date);
     }
 }

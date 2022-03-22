@@ -1,12 +1,14 @@
 package whu.edu.cs.transitnet.pojo;
 
+import whu.edu.cs.transitnet.vo.RealTimePointEntity;
+
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
 @Table(name = "real_time_data_temp", schema = "gtfs_data")
 @IdClass(RealTimeDataEntityPK.class)
-public class RealTimeDataEntity {
+public class RealTimeDataEntity extends RealTimePointEntity {
     private String routeId;
     private String direction;
     private String tripId;
@@ -22,6 +24,25 @@ public class RealTimeDataEntity {
     private String distanceFromNextStop;
     private String nextStop;
     private String recordedTime;
+
+    public RealTimeDataEntity(String vehicleId, Double lat, Double lon, String recordedTime) {
+        super(vehicleId, lat, lon, recordedTime);
+    }
+
+    public RealTimeDataEntity() {
+        super();
+        this.direction = null;
+        this.agencyId = null;
+        this.originStop = null;
+        this.tripId = null;
+        this.direction = null;
+        this.bearing = null;
+        this.aimedArrivalTime = null;
+        this.distanceFromOrigin = null;
+        this.presentableDistance = null;
+        this.distanceFromNextStop = null;
+        this.nextStop = null;
+    }
 
     @Basic
     @Column(name = "route_id")
