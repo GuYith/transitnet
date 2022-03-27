@@ -37,7 +37,7 @@ public class MapVController {
      * @return List<RoutesVo>
      */
     @CrossOrigin
-    @GetMapping("/api/mapv/origin")
+    @GetMapping("/api/mapv/transitnetwork")
     @ResponseBody
     public List<RoutesVo> listTrajs() {
         return mapVService.getRoutesVoOriginList();

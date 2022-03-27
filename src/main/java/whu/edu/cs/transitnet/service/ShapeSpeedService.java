@@ -83,6 +83,4 @@ public class ShapeSpeedService {
         }
         return routeShapeSpeedVos;
     }
-
-
 }

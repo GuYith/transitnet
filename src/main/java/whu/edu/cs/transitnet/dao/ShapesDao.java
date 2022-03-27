@@ -17,5 +17,14 @@ public interface ShapesDao extends JpaRepository<ShapesEntity, ShapesEntityPK> {
             + "ORDER BY se.shapePtSequence")
     List<ShapePointVo> findAllByRouteIdAndTripId(String routeId, String tripId);
 
+    @Query(value = "SELECT new whu.edu.cs.transitnet.vo.ShapePointVo("
+            + "se.shapePtLat, se.shapePtLon)"
+            + "FROM ShapesEntity se "
+            + "WHERE se.shapeId = ?1 "
+            + "ORDER BY se.shapePtSequence")
+    List<ShapePointVo> findAllByShapeId(String shapeId);
+
+    @Query(value = "SELECT DISTINCT shape_id FROM shapes", nativeQuery = true)
+    List<String> findAllShapeId();
     ShapesEntity findByShapeIdAndShapePtSequence(String shapeId, String shapePtSequence);
 }

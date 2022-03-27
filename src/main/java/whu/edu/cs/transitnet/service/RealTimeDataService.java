@@ -174,7 +174,6 @@ public class RealTimeDataService {
         return tripSpeedList;
     }
 
-    //TODO all Dao query Timestamp change to String
     public SpeedDateVo getSpeedDateByRouteId(String routeId, Date date) {
         List<SpeedDateVo> speedDateVos = new ArrayList<>();
         Timestamp startTime = new Timestamp(date.getTime());

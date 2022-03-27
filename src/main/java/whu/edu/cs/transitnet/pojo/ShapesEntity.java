@@ -2,8 +2,6 @@ package whu.edu.cs.transitnet.pojo;
 
 import javax.persistence.*;
 import java.util.Objects;
-//TODO 1. 添加 splitShape相关的实体类 2. 组合成路线的shape 3. 读取的时候带速度 + 和前端结合显示
-//TODO 添加方法，按照route选出shape？（待确认，不是很符合直觉）， 按shape选出来的话
 
 @Entity
 @Table(name = "shapes", schema = "gtfs_data")

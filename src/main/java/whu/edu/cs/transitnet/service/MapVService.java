@@ -1,5 +1,6 @@
 package whu.edu.cs.transitnet.service;
 
+import javafx.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import whu.edu.cs.transitnet.Torch.base.visualization.TrajJsonModel;
@@ -34,11 +35,18 @@ public class MapVService {
         return routesVo;
     }
 
+    public RoutesVo getRouteVoByShapeId(String routeId, String shapeId) {
+        List<ShapePointVo> shapePointVos = shapesDao.findAllByShapeId(shapeId);
+        RoutesVo routesVo = routesDao.findRoutesVoByRouteId(routeId);
+        routesVo.setTrajJsonModel(new TrajJsonModel(shapePointVos));
+        return routesVo;
+    }
+
     public List<RoutesVo> getRoutesVoOriginList() {
         List<RoutesVo> routesVos = new ArrayList<RoutesVo>();
-        List<TripsEntity> tripsEntities = tripsDao.findOriginTrips();
-        for (TripsEntity te: tripsEntities) {
-            RoutesVo routesVo = getRouteVoByRouteIdAndTripId(te.getRouteId(), te.getTripId());
+        List<Pair<String,String>> routeShapeList = tripsDao.findAllRouteIdAndShapeIdPair();
+        for(Pair<String,String> p: routeShapeList) {
+            RoutesVo routesVo = getRouteVoByShapeId(p.getKey(), p.getValue());
             routesVos.add(routesVo);
         }
         return routesVos;

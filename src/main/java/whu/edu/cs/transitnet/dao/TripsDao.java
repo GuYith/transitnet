@@ -1,5 +1,6 @@
 package whu.edu.cs.transitnet.dao;
 
+import javafx.util.Pair;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import whu.edu.cs.transitnet.pojo.TripsEntity;
@@ -24,4 +25,10 @@ public interface TripsDao extends JpaRepository<TripsEntity, String> {
             + "FROM calendar WHERE start_date <= ?2 and end_date >= ?3) "
             + " AND route_id = ?1", nativeQuery = true)
     List<TripsEntity> findAllTripsByRouteIdAndTimeSpan(String routeId, Date startDate, Date endDate);
+
+
+    @Query(value = "SELECT DISTINCT new javafx.util.Pair("
+            + "te.routeId, te.shapeId)"
+            + "FROM TripsEntity te")
+    List<Pair<String, String>> findAllRouteIdAndShapeIdPair();
 }
