@@ -1,6 +1,5 @@
 package whu.edu.cs.transitnet.service;
 
-import javafx.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import whu.edu.cs.transitnet.Torch.base.visualization.TrajJsonModel;
@@ -13,6 +12,7 @@ import whu.edu.cs.transitnet.utils.TimeUtil;
 import whu.edu.cs.transitnet.vo.RoutesVo;
 import whu.edu.cs.transitnet.vo.ShapePointVo;
 import whu.edu.cs.transitnet.vo.StopsVo;
+import whu.edu.cs.transitnet.vo.StringPair;
 
 import java.sql.Date;
 import java.util.ArrayList;
@@ -44,8 +44,8 @@ public class MapVService {
 
     public List<RoutesVo> getRoutesVoOriginList() {
         List<RoutesVo> routesVos = new ArrayList<RoutesVo>();
-        List<Pair<String,String>> routeShapeList = tripsDao.findAllRouteIdAndShapeIdPair();
-        for(Pair<String,String> p: routeShapeList) {
+        List<StringPair> routeShapeList = tripsDao.findAllRouteIdAndShapeIdPair();
+        for(StringPair p: routeShapeList) {
             RoutesVo routesVo = getRouteVoByShapeId(p.getKey(), p.getValue());
             routesVos.add(routesVo);
         }

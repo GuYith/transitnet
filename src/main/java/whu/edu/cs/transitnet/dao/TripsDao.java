@@ -1,9 +1,9 @@
 package whu.edu.cs.transitnet.dao;
 
-import javafx.util.Pair;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import whu.edu.cs.transitnet.pojo.TripsEntity;
+import whu.edu.cs.transitnet.vo.StringPair;
 
 import java.sql.Date;
 import java.util.List;
@@ -27,8 +27,9 @@ public interface TripsDao extends JpaRepository<TripsEntity, String> {
     List<TripsEntity> findAllTripsByRouteIdAndTimeSpan(String routeId, Date startDate, Date endDate);
 
 
-    @Query(value = "SELECT DISTINCT new javafx.util.Pair("
+    @Query(value = "SELECT DISTINCT new whu.edu.cs.transitnet.vo.StringPair("
             + "te.routeId, te.shapeId)"
             + "FROM TripsEntity te")
-    List<Pair<String, String>> findAllRouteIdAndShapeIdPair();
+    List<StringPair> findAllRouteIdAndShapeIdPair();
+
 }

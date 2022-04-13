@@ -1,6 +1,5 @@
 package whu.edu.cs.transitnet.service;
 
-import javafx.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import whu.edu.cs.transitnet.dao.RealTimeDataDao;
@@ -10,6 +9,7 @@ import whu.edu.cs.transitnet.utils.TimeUtil;
 import whu.edu.cs.transitnet.vo.RealTimeDataVo;
 import whu.edu.cs.transitnet.vo.RealTimePointEntity;
 import whu.edu.cs.transitnet.vo.SpeedDateVo;
+import whu.edu.cs.transitnet.vo.StringPair;
 
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -181,8 +181,8 @@ public class RealTimeDataService {
         String startTimeString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(startTime);
         String endTimeString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(endTime);
         List<RealTimeDataEntity> routesPoints = realTimeDataDao.findAllPointsByRouteIdByTimeSpan(routeId, startTimeString, endTimeString);
-        List<Pair<String,String>> vehicleIdAndTripIdList = getVehicleIdAndTripIdListInPointsList(routesPoints);
-        for (Pair p: vehicleIdAndTripIdList) {
+        List<StringPair> vehicleIdAndTripIdList = getVehicleIdAndTripIdListInPointsList(routesPoints);
+        for (StringPair p: vehicleIdAndTripIdList) {
             IndexEntity indexEntity = new IndexEntity(0,0);
             List<RealTimeDataEntity> tempList = routesPoints.stream().filter(item -> item.getVehicleId().equals(p.getKey()) && item.getTripId().equals(p.getValue()))
                     .collect(Collectors.toList());
@@ -210,12 +210,12 @@ public class RealTimeDataService {
         return result;
     }
 
-    public List<Pair<String, String>> getVehicleIdAndTripIdListInPointsList(List<RealTimeDataEntity> routesPoints) {
-        List<Pair<String, String>> result = new ArrayList<>();
+    public List<StringPair> getVehicleIdAndTripIdListInPointsList(List<RealTimeDataEntity> routesPoints) {
+        List<StringPair> result = new ArrayList<>();
         for (RealTimeDataEntity rtpt: routesPoints) {
             String vId = rtpt.getVehicleId();
             String tId = rtpt.getTripId();
-            Pair<String, String> pair = new Pair<>(vId, tId);
+            StringPair pair = new StringPair(vId, tId);
             if(result.contains(pair) == false)
                 result.add(pair);
         }
