@@ -55,6 +55,12 @@ public class RealTimeDataService {
         return realTimeDataDao.findAllVehicleIdByRecordedTime(recordedTime);
     }
 
+    /**
+     * Get speedDateVo in the lastest 7 days
+     * @param vehicleId
+     * @param curTimeStr
+     * @return
+     */
     public List<SpeedDateVo> getSpeedDateListByVehicleIdLastSevenDate(String vehicleId, String curTimeStr) {
         List<SpeedDateVo> speedDateVos = new ArrayList<>();
         Timestamp curTime = Timestamp.valueOf(curTimeStr);
@@ -82,6 +88,14 @@ public class RealTimeDataService {
         return speedDateVos;
     }
 
+    /**
+     * Get speedList of vehiclePoints
+     * @param dateStart
+     * @param dateEnd
+     * @param vehiclePoints
+     * @param indexEntity
+     * @return
+     */
     public List<Double> getSpeedListByPointList(Timestamp dateStart, Timestamp dateEnd, List<? extends RealTimePointEntity> vehiclePoints, IndexEntity indexEntity) {
         Timestamp lastTime = dateStart;
         List<Double> speedList = new ArrayList<>();

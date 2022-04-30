@@ -16,6 +16,12 @@ import java.util.List;
 public class ArrivalTimeController {
     @Resource
     ArrivaltimeService arrivaltimeService;
+
+    /**
+     * get the bus arrival time info on date, include all stop count, late count and timespan
+     * @param date
+     * @return
+     */
     @CrossOrigin
     @GetMapping("/api/visual/arrivalTime")
     @ResponseBody

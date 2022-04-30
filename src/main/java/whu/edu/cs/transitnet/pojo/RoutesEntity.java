@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "routes", schema = "gtfs_data")
+@Table(name = "routes", schema = "transitnet")
 public class RoutesEntity {
     private String routeId;
     private String agencyId;

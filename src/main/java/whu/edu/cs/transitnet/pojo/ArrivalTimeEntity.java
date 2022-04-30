@@ -5,7 +5,7 @@ import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
-@Table(name = "arrival_time", schema = "gtfs_data")
+@Table(name = "arrival_time", schema = "transitnet")
 public class ArrivalTimeEntity {
     private Timestamp timeSpan;
     private Integer allCount;

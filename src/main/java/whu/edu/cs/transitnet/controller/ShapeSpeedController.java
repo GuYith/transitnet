@@ -15,6 +15,10 @@ public class ShapeSpeedController {
     @Resource
     ShapeSpeedService shapeSpeedService;
 
+    /**
+     * Get route shape (traj segment) with speed,
+     * @return
+     */
     @CrossOrigin
     @GetMapping("/api/routes/speed")
     @ResponseBody

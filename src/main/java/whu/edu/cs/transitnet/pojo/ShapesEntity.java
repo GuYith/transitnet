@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "shapes", schema = "gtfs_data")
+@Table(name = "shapes", schema = "transitnet")
 @IdClass(ShapesEntityPK.class)
 public class ShapesEntity {
     private String shapeId;

@@ -16,7 +16,11 @@ import java.util.List;
 public class RealTimeDataController {
     @Resource
     RealTimeDataService realTimeDataService;
-
+    /**
+     * Get RealTimeDataVo by curTime, the last five minutes
+     * @param curTime
+     * @return List<RealTimeDataVo>
+     */
     @CrossOrigin
     @GetMapping("/api/realTime")
     @ResponseBody
@@ -25,7 +29,7 @@ public class RealTimeDataController {
         return realTimeDataService.getRealTimeDataVoLastByRecordedTime(d);
     }
 
-    /**http://localhost:8090/api/mapv/origin
+    /**
      * Get vehicle list by recordedTime
      * @param recordedTime
      * @return List<String>
@@ -37,6 +41,12 @@ public class RealTimeDataController {
         return realTimeDataService.getVehicleIdList(recordedTime);
     }
 
+    /**
+     * Get the
+     * @param vehicleId
+     * @param curTime
+     * @return
+     */
     @CrossOrigin
     @GetMapping("/api/realTime/speed")
     @ResponseBody

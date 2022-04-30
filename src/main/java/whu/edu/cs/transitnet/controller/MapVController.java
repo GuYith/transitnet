@@ -19,7 +19,7 @@ public class MapVController {
     MapVService mapVService;
 
     /**
-     * Get the trajectory of route By routeId and tripId
+     * Get the trajectory of route By routeId and tripId, including route info
      * @param routeId
      * @param tripId
      * @return routesVo
@@ -32,7 +32,7 @@ public class MapVController {
     }
 
     /**
-     * Get trajectories of all routes, just the first in DataBase
+     * Get trajectories of all routes (first in DataBase)
      * for visualization test
      * @return List<RoutesVo>
      */
